@@ -44,12 +44,22 @@ dense_2 = {
     '6' : {}
 }
 
+dense_3 = {
+    'A' : {'B' : 7, 'C' : 3, 'D' : 6, 'E' : 2},
+    'B' : {'C' : 4, 'D' : 8, 'E' : 5},
+    'C' : {'D' : 1, 'E' : 9},
+    'D' : {'E' : 3},
+    'E' : {}
+}
+
 
 
 def priority_queue_dij(adj, src): 
-    start = time.perf_counter()
     # set all elements of solution to infinity initially
     dist = {v: float('inf') for v in adj}
+
+    # store parent values
+    parent = {v: None for v in adj}
     
     # set the path from the source to itself to 0
     dist[src] = 0
@@ -66,12 +76,9 @@ def priority_queue_dij(adj, src):
 
             if dist[u] + cost < dist[vertex]:
                 dist[vertex] = dist[u] + cost
+                parent[vertex] = u
                 heapq.heappush(queue, (dist[vertex], vertex))
-
-    end = time.perf_counter()
-    total_time = end - start
-    print(f"Time: {total_time * 1000: .6f} seconds")
-    return dist
+    return dist, parent
 
 '''
 Helper function to ensure that graphs are undirected
@@ -108,6 +115,20 @@ def benchmark(graph, src, trials=5):
     avg_time = sum(times) / trials
     return avg_time * 1000
 
+
+def extra_credit(parent, src, target):
+    path = []
+    current = target
+    while current is not None:
+        path.append(current)
+        current = parent[current]
+
+    path.reverse()    
+
+    if path[0] == src:
+        return path
+    return []
+
 '''
 Main program to run implementation
 '''
@@ -116,19 +137,70 @@ def main():
     sparse_2_graph = undirected(sparse_2)
     dense_1_graph = undirected(dense_1)
     dense_2_graph = undirected(dense_2)
+    dense_3_graph = undirected(dense_3)
 
     
     print("------SPARSE GRAPH 1:-------")
+    dist, parent = priority_queue_dij(sparse_1_graph, 'A')
+    print("Distances: ", dist)
+    print("Parents:", parent)
+    print("Shortest paths: ")
+    for vertex in dist:
+        path = extra_credit(parent,'A', vertex)
+        print(f"{'A'} to {vertex}: {' -> '.join(path)}")
+
+    print("Average time:")
     print(benchmark(sparse_1_graph, 'A'))
 
     print("------SPARSE GRAPH 2:--------")
+    dist, parent = priority_queue_dij(sparse_2_graph, '1')
+    print("Distances:", dist)
+    print("Parents:", parent)
+    print("Shortest paths: ")
+    for vertex in dist:
+        path = extra_credit(parent,'1', vertex)
+        print(f"{'1'} to {vertex}: {' -> '.join(path)}")
+
+    print("Average time:")
     print(benchmark(sparse_2_graph, '1'))
 
     print("------DENSE GRAPH 1:----------")
+    dist, parent = priority_queue_dij(dense_1_graph, 'A')
+    print("Distances: ", dist)
+    print("Parents:", parent)
+    print("Shortest paths: ")
+    for vertex in dist:
+        path = extra_credit(parent,'A', vertex)
+        print(f"{'A'} to {vertex}: {' -> '.join(path)}")
+
+    print("Average time:")
     print(benchmark(dense_1_graph, 'A'))
 
     print("------DENSE GRAPH 2:----------")
+    dist, parent = priority_queue_dij(dense_2_graph, '1')
+    print("Distances: ", dist)
+    print("Parents:", parent)
+    print("Shortest paths: ")
+    for vertex in dist:
+        path = extra_credit(parent,'1', vertex)
+        print(f"{'1'} to {vertex}: {' -> '.join(path)}")
+
+    print("Average time:")
     print(benchmark(dense_2_graph, '1'))
+
+    print("------DENSE GRAPH 3:----------")
+    dist, parent = priority_queue_dij(dense_3_graph, 'A')
+    print("Distances: ", dist)
+    print("Parents:", parent)
+    print("Shortest paths: ")
+    for vertex in dist:
+        path = extra_credit(parent,'A', vertex)
+        print(f"{'A'} to {vertex}: {' -> '.join(path)}")
+
+    print("Average time:")
+    print(benchmark(dense_3_graph, 'A'))
+
+
 
 
 if __name__ == "__main__":
