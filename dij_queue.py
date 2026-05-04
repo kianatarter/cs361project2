@@ -6,6 +6,7 @@ Kiana Tarter and Neveah Martinez
 '''
 
 import heapq
+import tracemalloc
 import time
 
 # Syntax: {src: { neighbor: weight} }
@@ -115,6 +116,14 @@ def benchmark(graph, src, trials=5):
     avg_time = sum(times) / trials
     return avg_time * 1000
 
+def benchmark_memory(graph,src):
+    tracemalloc.start()
+    priority_queue_dij(graph, src)
+    current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    return peak / (1024 * 1024)
+
 
 def extra_credit(parent, src, target):
     path = []
@@ -152,6 +161,8 @@ def main():
     print("Average time:")
     print(benchmark(sparse_1_graph, 'A'))
 
+    print(f"Peak memory: {benchmark_memory(sparse_1_graph, 'A'):.6f} MB")
+
     print("------SPARSE GRAPH 2:--------")
     dist, parent = priority_queue_dij(sparse_2_graph, '1')
     print("Distances:", dist)
@@ -163,6 +174,7 @@ def main():
 
     print("Average time:")
     print(benchmark(sparse_2_graph, '1'))
+    print(f"Peak memory: {benchmark_memory(sparse_2_graph, '1'):.6f} MB")
 
     print("------DENSE GRAPH 1:----------")
     dist, parent = priority_queue_dij(dense_1_graph, 'A')
@@ -175,6 +187,7 @@ def main():
 
     print("Average time:")
     print(benchmark(dense_1_graph, 'A'))
+    print(f"Peak memory: {benchmark_memory(dense_1_graph, 'A'):.6f} MB")
 
     print("------DENSE GRAPH 2:----------")
     dist, parent = priority_queue_dij(dense_2_graph, '1')
@@ -187,6 +200,7 @@ def main():
 
     print("Average time:")
     print(benchmark(dense_2_graph, '1'))
+    print(f"Peak memory: {benchmark_memory(dense_2_graph, '1'):.6f} MB")
 
     print("------DENSE GRAPH 3:----------")
     dist, parent = priority_queue_dij(dense_3_graph, 'A')
@@ -199,6 +213,7 @@ def main():
 
     print("Average time:")
     print(benchmark(dense_3_graph, 'A'))
+    print(f"Peak memory: {benchmark_memory(dense_3_graph, 'A'):.6f} MB")
 
 
 
